@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blend — Transcriptor de Video</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --bg:        #080f1a;
+      --surface:   #0d1b2e;
+      --surface2:  #112240;
+      --border:    #1a3a5c;
+      --cyan:      rgb(29, 245, 244);
+      --cyan-dim:  rgba(29, 245, 244, 0.12);
+      --cyan-glow: rgba(29, 245, 244, 0.35);
+      --text:      #e8f0fe;
+      --muted:     #6b8cae;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+    }
+    .logo-text {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+    .logo-text span { color: var(--cyan); }
+    .logo-divider { width: 1px; height: 28px; background: var(--border); }
+    .logo-sub {
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 680px;
+      box-shadow: 0 0 60px rgba(29,245,244,0.04), 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .card-title    { font-size: 1.25rem; font-weight: 600; color: #fff; margin-bottom: 0.35rem; }
+    .card-subtitle { font-size: 0.875rem; color: var(--muted); margin-bottom: 2rem; line-height: 1.5; }
+
+    label.field-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 0.5rem;
+    }
+
+    select {
+      width: 100%;
+      padding: 0.8rem 2.5rem 0.8rem 1rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b8cae' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+    }
+    select:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px var(--cyan-dim); }
+    select option { background: #0d1b2e; }
+
+    .btn {
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: 0.9rem;
+      background: var(--cyan);
+      color: #080f1a;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      transition: opacity 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 20px var(--cyan-glow);
+    }
+    .btn:hover:not(:disabled) { opacity: 0.88; box-shadow: 0 0 32px var(--cyan-glow); }
+    .btn:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; box-shadow: none; }
+
+    /* ── Progress block ── */
+    .progress-block {
+      margin-top: 1.8rem;
+      display: none;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.6rem;
+    }
+    .progress-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .progress-pct {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--cyan);
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 0 10px var(--cyan-glow);
+    }
+
+    /* Track */
+    .progress-track {
+      position: relative;
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 99px;
+      overflow: visible;
+      border: 1px solid var(--border);
+    }
+
+    /* Fill */
+    .progress-fill {
+      position: absolute;
+      top: 0; left: 0;
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #0af5f4 0%, rgb(29,245,244) 60%, #a0fffe 100%);
+      box-shadow: 0 0 12px var(--cyan-glow), 0 0 24px rgba(29,245,244,0.2);
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 0%;
+    }
+
+    /* Glowing head dot */
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      right: -3px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 8px var(--cyan), 0 0 20px var(--cyan), 0 0 40px var(--cyan-glow);
+      opacity: 1;
+      transition: opacity 0.3s;
+    }
+
+    /* Scan line animation on track */
+    .progress-track::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 99px;
+      background: linear-gradient(90deg, transparent 0%, rgba(29,245,244,0.06) 50%, transparent 100%);
+      background-size: 200% 100%;
+      animation: scan 2s linear infinite;
+    }
+    @keyframes scan {
+      0%   { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    /* Tick marks */
+    .progress-ticks {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 5px;
+      padding: 0 1px;
+    }
+    .progress-ticks span {
+      font-size: 0.65rem;
+      color: var(--border);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Status message */
+    .progress-message {
+      margin-top: 0.9rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-align: center;
+      min-height: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: color 0.3s;
+    }
+    .progress-message.done  { color: var(--cyan); text-shadow: 0 0 10px var(--cyan-glow); }
+    .progress-message.error { color: #f87171; }
+
+    /* Pulse dot */
+    .pulse {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 6px var(--cyan);
+      animation: pulse 1.2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    /* Stage indicators */
+    .stages {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1.2rem;
+      gap: 0.5rem;
+    }
+    .stage {
+      flex: 1;
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--border);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 0.4rem 0.2rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      transition: all 0.3s;
+    }
+    .stage.active {
+      color: var(--cyan);
+      border-color: rgba(29,245,244,0.4);
+      background: var(--cyan-dim);
+      box-shadow: 0 0 10px rgba(29,245,244,0.1);
+    }
+    .stage.completed {
+      color: rgba(29,245,244,0.5);
+      border-color: rgba(29,245,244,0.2);
+    }
+
+    /* ── Result ── */
+    .result-box {
+      margin-top: 2rem;
+      display: none;
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+    }
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .result-header label {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .lang-badge {
+      background: var(--cyan-dim);
+      color: var(--cyan);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(29,245,244,0.2);
+    }
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: inherit;
+      padding: 1rem;
+      resize: vertical;
+      line-height: 1.7;
+      outline: none;
+    }
+    textarea:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px var(--cyan-dim); }
+
+    .actions { display: flex; gap: 0.75rem; margin-top: 0.75rem; }
+    .btn-secondary {
+      flex: 1;
+      padding: 0.65rem;
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    .footer { margin-top: 2rem; font-size: 0.78rem; color: var(--muted); opacity: 0.6; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo-text">Blend<span>.</span></div>
+    <div class="logo-divider"></div>
+    <div class="logo-sub">Transcriptor de Video</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Transcripción de audio</div>
+    <div class="card-subtitle">
+      Selecciona un video de la carpeta <code style="color:var(--cyan); font-size:0.82rem;">Videos/</code>
+      para extraer y transcribir su audio con Whisper.
+    </div>
+
+    <label class="field-label" for="video-select">Video disponible</label>
+    <select id="video-select" onchange="onSelectChange()">
+      <option value="">-- Cargando videos... --</option>
+    </select>
+
+    <button class="btn" id="transcribe-btn" disabled>Transcribir</button>
+
+    <!-- Progress block -->
+    <div class="progress-block" id="progress-block">
+
+      <div class="stages" id="stages">
+        <div class="stage" id="stage-load">Carga</div>
+        <div class="stage" id="stage-analyze">Análisis</div>
+        <div class="stage" id="stage-transcribe">Transcripción</div>
+        <div class="stage" id="stage-save">Guardado</div>
+      </div>
+
+      <div style="margin-top:1.2rem;">
+        <div class="progress-header">
+          <span class="progress-label">Progreso</span>
+          <span class="progress-pct" id="progress-pct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="progress-ticks">
+          <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
+        </div>
+      </div>
+
+      <div class="progress-message" id="progress-message">
+        <span class="pulse" id="pulse-dot"></span>
+        <span id="progress-text">Iniciando...</span>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="result-box" id="result-box">
+      <div class="result-header">
+        <label>Transcripción</label>
+        <span class="lang-badge" id="lang-badge"></span>
+      </div>
+      <textarea id="transcript" readonly></textarea>
+      <div class="actions">
+        <button class="btn-secondary" onclick="copyText()">📋 Copiar texto</button>
+        <button class="btn-secondary" onclick="downloadText()">⬇️ Descargar .txt</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Powered by OpenAI Whisper · Blend</div>
+
+  <script>
+    const select       = document.getElementById('video-select');
+    const btn          = document.getElementById('transcribe-btn');
+    const progressBlock = document.getElementById('progress-block');
+    const progressFill = document.getElementById('progress-fill');
+    const progressPct  = document.getElementById('progress-pct');
+    const progressMsg  = document.getElementById('progress-message');
+    const progressText = document.getElementById('progress-text');
+    const pulseDot     = document.getElementById('pulse-dot');
+    const resultBox    = document.getElementById('result-box');
+    const transcriptEl = document.getElementById('transcript');
+    const langBadge    = document.getElementById('lang-badge');
+
+    const stages = {
+      load:       document.getElementById('stage-load'),
+      analyze:    document.getElementById('stage-analyze'),
+      transcribe: document.getElementById('stage-transcribe'),
+      save:       document.getElementById('stage-save'),
+    };
+
+    async function loadVideos() {
+      const res  = await fetch('/videos');
+      const data = await res.json();
+      select.innerHTML = '';
+      if (data.videos.length === 0) {
+        select.innerHTML = '<option value="">-- No hay videos en la carpeta Videos/ --</option>';
+        return;
+      }
+      select.innerHTML = '<option value="">-- Selecciona un video --</option>';
+      data.videos.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v; opt.textContent = v;
+        select.appendChild(opt);
+      });
+    }
+
+    function onSelectChange() {
+      btn.disabled = select.value === '';
+      resultBox.style.display = 'none';
+      progressBlock.style.display = 'none';
+    }
+
+    function setStage(status, pct) {
+      Object.values(stages).forEach(s => s.classList.remove('active', 'completed'));
+      if (pct >= 100) {
+        Object.values(stages).forEach(s => s.classList.add('completed'));
+        return;
+      }
+      if (status === 'loading' || pct < 20) {
+        stages.load.classList.add('active');
+      } else if (status === 'processing' && pct < 25) {
+        stages.load.classList.add('completed');
+        stages.analyze.classList.add('active');
+      } else if (status === 'processing') {
+        stages.load.classList.add('completed');
+        stages.analyze.classList.add('completed');
+        stages.transcribe.classList.add('active');
+      } else if (status === 'saving') {
+        stages.load.classList.add('completed');
+        stages.analyze.classList.add('completed');
+        stages.transcribe.classList.add('completed');
+        stages.save.classList.add('active');
+      }
+    }
+
+    function updateProgress(pct, message, state) {
+      progressFill.style.width = pct + '%';
+      progressPct.textContent  = pct + '%';
+      progressText.textContent = message;
+      setStage(state, pct);
+    }
+
+    btn.addEventListener('click', async () => {
+      const filename = select.value;
+      if (!filename) return;
+
+      btn.disabled = true;
+      resultBox.style.display = 'none';
+      progressBlock.style.display = 'block';
+      progressMsg.className = 'progress-message';
+      pulseDot.style.display = 'inline-block';
+      updateProgress(0, 'Iniciando...', 'queued');
+
+      // Lanzar transcripción
+      const res = await fetch('/transcribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename })
+      });
+      const { job_id, error } = await res.json();
+
+      if (error) {
+        progressMsg.className = 'progress-message error';
+        pulseDot.style.display = 'none';
+        progressText.textContent = '❌ ' + error;
+        btn.disabled = false;
+        return;
+      }
+
+      // Escuchar SSE de progreso
+      const evtSource = new EventSource(`/progress/${job_id}`);
+
+      evtSource.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        updateProgress(data.progress, data.message, data.status);
+
+        if (data.status === 'done') {
+          evtSource.close();
+          pulseDot.style.display = 'none';
+          progressMsg.className = 'progress-message done';
+          progressText.textContent = '✦ Transcripción completada y guardada';
+
+          transcriptEl.value = data.transcript;
+          transcriptEl.dataset.filename = filename.replace('.mp4', '.txt');
+          const sizeInfo = data.file_size_gb ? ` · ${data.file_size_gb} GB` : '';
+          langBadge.textContent = `🌐 ${data.language}${sizeInfo}`;
+          resultBox.style.display = 'block';
+          btn.disabled = false;
+        }
+
+        if (data.status === 'error') {
+          evtSource.close();
+          pulseDot.style.display = 'none';
+          progressMsg.className = 'progress-message error';
+          progressText.textContent = '❌ ' + data.message;
+          btn.disabled = false;
+        }
+      };
+
+      evtSource.onerror = () => {
+        evtSource.close();
+        pulseDot.style.display = 'none';
+        progressMsg.className = 'progress-message error';
+        progressText.textContent = '❌ Error de conexión con el servidor.';
+        btn.disabled = false;
+      };
+    });
+
+    function copyText() { navigator.clipboard.writeText(transcriptEl.value); }
+
+    function downloadText() {
+      const blob = new Blob([transcriptEl.value], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = transcriptEl.dataset.filename || 'transcripcion.txt';
+      a.click();
+    }
+
+    loadVideos();
+  </script>
+</body>
+</html>

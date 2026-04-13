@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+venv/
+env/
+
+# Videos y transcripciones (archivos locales, no van al repo)
+transcriber/Videos/
+transcriber/transcripciones/
+transcriber/uploads/
+
+# Whisper cache
+~/.cache/whisper/
+
+# OS
+.DS_Store
+Thumbs.db
