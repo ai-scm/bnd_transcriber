@@ -7,7 +7,7 @@ Todo funciona en tu computador, **sin internet** y **sin límites de tamaño**.
 
 ## 📦 Prerrequisitos (solo la primera vez)
 
-Antes de usar la herramienta necesitas instalar 3 cosas. Sigue cada enlace y las instrucciones:
+Antes de usar la herramienta necesitas instalar 3 cosas. Sigue las instrucciones según tu sistema operativo:
 
 ---
 
@@ -17,17 +17,36 @@ Python es el motor que hace funcionar la herramienta.
 
 **Descarga:** [https://www.python.org/downloads/](https://www.python.org/downloads/)
 
-**Instalación:**
+#### 🪟 Windows
+
 1. Haz clic en el botón amarillo "Download Python 3.x.x"
 2. Ejecuta el archivo descargado
 3. ⚠️ **MUY IMPORTANTE:** Marca la casilla que dice **"Add Python to PATH"** antes de hacer clic en "Install Now"
 4. Haz clic en "Install Now"
 5. Espera a que termine y cierra el instalador
 
-**Verificar que quedó bien instalado:**
+**Verificar:**
 1. Abre el menú de inicio y busca "cmd"
 2. Escribe: `python --version`
 3. Debe mostrar algo como: `Python 3.11.9`
+
+#### 🍎 Mac
+
+1. Abre la **Terminal** (busca "Terminal" en Spotlight con `Cmd + Espacio`)
+2. Instala Homebrew si no lo tienes (copia y pega esto en la Terminal):
+   ```
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+3. Instala Python:
+   ```
+   brew install python
+   ```
+
+**Verificar:**
+1. En la Terminal escribe: `python3 --version`
+2. Debe mostrar algo como: `Python 3.11.9`
+
+> 💡 En Mac el comando es `python3` en vez de `python`.
 
 ---
 
@@ -35,7 +54,7 @@ Python es el motor que hace funcionar la herramienta.
 
 FFmpeg es lo que permite extraer el audio de los videos.
 
-**Descarga:** [https://www.gyan.dev/ffmpeg/builds/](https://www.gyan.dev/ffmpeg/builds/)
+#### 🪟 Windows
 
 **Instalación rápida (recomendada):**
 1. Abre el menú de inicio y busca "cmd"
@@ -51,13 +70,26 @@ FFmpeg es lo que permite extraer el audio de los videos.
 3. Extrae el contenido en una carpeta (por ejemplo `C:\ffmpeg`)
 4. Pide ayuda al equipo técnico para agregarlo al PATH del sistema
 
+#### 🍎 Mac
+
+1. Abre la Terminal
+2. Escribe:
+   ```
+   brew install ffmpeg
+   ```
+3. Espera a que termine (puede tardar unos minutos)
+
+**Verificar (ambos sistemas):**
+- Escribe `ffmpeg -version` en la terminal/cmd. Si muestra información de versión, está bien instalado.
+
 ---
 
 ### 3. Dependencias de Python (librerías)
 
 Son componentes adicionales que la herramienta necesita para funcionar.
 
-**Instalación:**
+#### 🪟 Windows
+
 1. Abre el menú de inicio y busca "cmd"
 2. Escribe estos comandos uno por uno (presiona Enter después de cada uno):
    ```
@@ -65,6 +97,16 @@ Son componentes adicionales que la herramienta necesita para funcionar.
    pip install -r requirements.txt
    ```
 3. Espera a que se descarguen e instalen todos los paquetes (puede tardar varios minutos)
+
+#### 🍎 Mac
+
+1. Abre la Terminal
+2. Navega a la carpeta del proyecto (ajusta la ruta según donde lo hayas descargado):
+   ```
+   cd ~/Documents/bnd_transcriber/transcriber
+   pip3 install -r requirements.txt
+   ```
+3. Espera a que se descarguen e instalen todos los paquetes
 
 > 💡 Esto solo se hace una vez. No necesitas repetirlo cada vez que uses la herramienta.
 
@@ -80,11 +122,13 @@ Copia el video (`.mp4`) o audio (`.mp3`) que quieres transcribir en esta carpeta
 📁 transcriber → 📁 Videos
 ```
 
-> Puedes arrastrar el archivo directamente desde el explorador de Windows.
+> Puedes arrastrar el archivo directamente desde el explorador de archivos.
 
 ---
 
 ### Paso 2 — Ejecuta la herramienta
+
+#### 🪟 Windows
 
 Haz **doble clic** en el archivo:
 
@@ -95,6 +139,22 @@ Haz **doble clic** en el archivo:
 Se abrirá una ventana negra que dice "Blend Transcriptor". Espera a que diga **"La herramienta está lista!"** y se abrirá tu navegador automáticamente.
 
 > ⚠️ **No cierres la ventana negra.** Si la cierras, la herramienta se apaga.
+
+#### 🍎 Mac
+
+Haz **doble clic** en el archivo:
+
+```
+📄 iniciar_transcriptor.command
+```
+
+La primera vez puede que Mac te pida permiso:
+1. Si dice "no se puede abrir porque es de un desarrollador no identificado", ve a **Preferencias del Sistema → Seguridad y Privacidad** y haz clic en "Abrir de todos modos"
+2. También puedes hacer clic derecho → "Abrir" para saltarte la advertencia
+
+Se abrirá una ventana de Terminal. Espera a que diga **"La herramienta está lista!"** y se abrirá tu navegador automáticamente.
+
+> ⚠️ **No cierres la ventana de Terminal.** Si la cierras, la herramienta se apaga.
 
 ---
 
@@ -153,10 +213,19 @@ Cuando termines, simplemente **cierra la ventana negra** (la X de la esquina) o 
 ## ❓ Solución de problemas
 
 ### "Al hacer doble clic no pasa nada"
-→ Haz clic derecho sobre `iniciar_transcriptor.bat` → "Ejecutar como administrador"
+
+**Windows:** Haz clic derecho sobre `iniciar_transcriptor.bat` → "Ejecutar como administrador"
+
+**Mac:** Haz clic derecho sobre `iniciar_transcriptor.command` → "Abrir". Si no funciona, abre la Terminal y escribe:
+```
+chmod +x iniciar_transcriptor.command
+```
+Luego intenta de nuevo.
 
 ### "Dice que Python no está instalado"
-→ Instala Python siguiendo las instrucciones de la sección de Prerrequisitos. **No olvides marcar "Add to PATH".**
+→ Instala Python siguiendo las instrucciones de la sección de Prerrequisitos.
+- **Windows:** No olvides marcar "Add to PATH"
+- **Mac:** Usa `brew install python` y recuerda que el comando es `python3`
 
 ### "El navegador se abre pero dice que no puede conectar"
 → Espera un poco más. La primera vez que se ejecuta, el modelo de inteligencia artificial se descarga y eso puede tardar unos minutos. Recarga la página (F5) después de un momento.
@@ -189,13 +258,14 @@ Revisa y corrige manualmente lo que sea necesario.
 ```
 📁 bnd_transcriber/
 │
-├── 📄 iniciar_transcriptor.bat    ← DOBLE CLIC AQUÍ PARA INICIAR
-├── 📄 INSTRUCCIONES.md            ← Este archivo
+├── 📄 iniciar_transcriptor.bat        ← DOBLE CLIC AQUÍ (Windows)
+├── 📄 iniciar_transcriptor.command    ← DOBLE CLIC AQUÍ (Mac)
+├── 📄 INSTRUCCIONES.md                ← Este archivo
 │
 └── 📁 transcriber/
-    ├── 📁 Videos/                 ← PON TUS ARCHIVOS AQUÍ
-    ├── 📁 transcripciones/        ← AQUÍ SE GUARDAN LOS RESULTADOS
-    └── 🐍 app.py                  ← (no tocar)
+    ├── 📁 Videos/                     ← PON TUS ARCHIVOS AQUÍ
+    ├── 📁 transcripciones/            ← AQUÍ SE GUARDAN LOS RESULTADOS
+    └── 🐍 app.py                      ← (no tocar)
 ```
 
 ---
