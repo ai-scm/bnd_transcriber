@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Blend — Transcriptor de Video</title>
+  <title>Blend — Transcriptor de Audio & Video</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -340,17 +340,17 @@
   <div class="header">
     <div class="logo-text">Blend<span>.</span></div>
     <div class="logo-divider"></div>
-    <div class="logo-sub">Transcriptor de Video</div>
+    <div class="logo-sub">Transcriptor de Audio &amp; Video</div>
   </div>
 
   <div class="card">
     <div class="card-title">Transcripción de audio</div>
     <div class="card-subtitle">
-      Selecciona un video de la carpeta <code style="color:var(--cyan); font-size:0.82rem;">Videos/</code>
-      para extraer y transcribir su audio con Whisper.
+      Selecciona un archivo de la carpeta <code style="color:var(--cyan); font-size:0.82rem;">Videos/</code>
+      para extraer y transcribir su audio con Whisper. Soporta <strong style="color:var(--cyan);">.mp4</strong> y <strong style="color:var(--cyan);">.mp3</strong>.
     </div>
 
-    <label class="field-label" for="video-select">Video disponible</label>
+    <label class="field-label" for="video-select">Archivo disponible</label>
     <select id="video-select" onchange="onSelectChange()">
       <option value="">-- Cargando videos... --</option>
     </select>
@@ -427,10 +427,10 @@
       const data = await res.json();
       select.innerHTML = '';
       if (data.videos.length === 0) {
-        select.innerHTML = '<option value="">-- No hay videos en la carpeta Videos/ --</option>';
+        select.innerHTML = '<option value="">-- No hay archivos en la carpeta Videos/ --</option>';
         return;
       }
-      select.innerHTML = '<option value="">-- Selecciona un video --</option>';
+      select.innerHTML = '<option value="">-- Selecciona un archivo --</option>';
       data.videos.forEach(v => {
         const opt = document.createElement('option');
         opt.value = v; opt.textContent = v;
@@ -515,7 +515,7 @@
           progressText.textContent = '✦ Transcripción completada y guardada';
 
           transcriptEl.value = data.transcript;
-          transcriptEl.dataset.filename = filename.replace('.mp4', '.txt');
+          transcriptEl.dataset.filename = filename.replace(/\.[^.]+$/, '.txt');
           const sizeInfo = data.file_size_gb ? ` · ${data.file_size_gb} GB` : '';
           langBadge.textContent = `🌐 ${data.language}${sizeInfo}`;
           resultBox.style.display = 'block';

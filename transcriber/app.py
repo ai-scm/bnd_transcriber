@@ -19,7 +19,7 @@ os.makedirs(TRANSCRIPTS_FOLDER, exist_ok=True)
 
 # Carga el modelo una sola vez al iniciar
 # Opciones: tiny, base, small, medium, large
-model = whisper.load_model("base")
+model = whisper.load_model("medium")
 
 # Almacén de progreso por job_id
 progress_store = {}
@@ -39,7 +39,7 @@ def favicon():
 def list_videos():
     if not os.path.exists(VIDEOS_FOLDER):
         return jsonify({'videos': []})
-    files = [f for f in os.listdir(VIDEOS_FOLDER) if f.lower().endswith('.mp4')]
+    files = [f for f in os.listdir(VIDEOS_FOLDER) if f.lower().endswith(('.mp4', '.mp3'))]
     return jsonify({'videos': sorted(files)})
 
 
